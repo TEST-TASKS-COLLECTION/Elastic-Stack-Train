@@ -1,0 +1,51 @@
+version: '3.6'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    container_name: elasticsearch
+    #build: .
+    ports:
+      # all API calls over HTTP
+      - '127.0.0.1:9200:9200'
+
+      # communication between nodes in a cluster
+      - '127.0.0.1:9300:9300' 
+    environment:
+      discovery.type: single-node
+
+      # override default JVM options
+      # Set maximum heap size to 512mb
+      # initial memory allocation pool xms
+      # maximum memory allocation pool for java virtual machine (xms)
+      ES_JAVA_OPTS: -Xmx512m -Xms512m
+      node.name: es01
+      cluster.name: elasticsearch
+    volumes:
+      - ./elastic/data:/usr/share/elasticsearch/data
+    networks:
+      - elasticnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.11.1
+    container_name: kibana
+    ports:
+      # kibana backend server port
+      - '127.0.0.1:5601:5601'
+
+      # logstash will use this port
+      - '127.0.0.1:9600:9600'
+    environment:
+      SERVERNAME: kibana
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ES_JAVA_OPTS: -Xmx512m -Xms512m
+    networks:
+      - elasticnet
+    depends_on:
+      - elasticsearch
+volumes:
+  logvolume01: {}
+
+networks:
+  elasticnet: {}
+  
+  
