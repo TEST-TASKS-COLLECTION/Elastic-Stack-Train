@@ -3,8 +3,7 @@ from elasticsearch import Elasticsearch
 
 import os
 
-HOST = os.getenv("HOST", "localhost")
-print("USING HOST: ", HOST)
+
 
 # es = Elasticsearch(hosts="http://localhost:9200", verify_certs=False)
 # es = Elasticsearch(
@@ -13,9 +12,7 @@ print("USING HOST: ", HOST)
 #     verify_certs=False
 # )
 
-es = Elasticsearch(
-    hosts=[{"host": "elasticsearch", "port": 9200, 'scheme': "http"}],
-)
+
 
 doc = {
     'author': 'Mikeyy',
