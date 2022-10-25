@@ -1,8 +1,21 @@
 version: '3.6'
 services:
+  main:
+    build: 
+      context: src/
+    container_name: elastic_app
+    volumes: 
+      - ./src/:/app/
+    depends_on:
+      - elasticsearch
+    tty: true
+    restart: 'on-failure'
+
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
     container_name: elasticsearch
+    hostname: elasticsearch
     #build: .
     ports:
       # all API calls over HTTP
@@ -28,6 +41,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.11.1
     container_name: kibana
+    hostname: kibana
     ports:
       # kibana backend server port
       - '127.0.0.1:5601:5601'
