@@ -10,6 +10,10 @@ services:
       - elasticsearch
     tty: true
     restart: 'on-failure'
+    networks:
+      - elasticnet
+    environment:
+      - HOST=elasticsearch
 
 
   elasticsearch:
@@ -60,6 +64,8 @@ volumes:
   logvolume01: {}
 
 networks:
-  elasticnet: {}
+  elasticnet: 
+    name: elasticnet
+    driver: bridge
   
   

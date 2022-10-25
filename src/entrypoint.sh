@@ -2,7 +2,7 @@
 
 echo "Waiting for elasticsearch..."
 
-while ! nc -z kibana 5601; do
+while ! nc -z elasticsearch 9200; do
     sleep 0.1
 done
 
