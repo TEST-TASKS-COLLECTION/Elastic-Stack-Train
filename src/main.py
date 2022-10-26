@@ -4,7 +4,7 @@ from elasticsearch import Elasticsearch
 
 import os
 
-from create_stack import HOST, client
+from elastic_app import HOST, client
 
 
 

@@ -1,1 +1,0 @@
-from create_stack import client, HOST

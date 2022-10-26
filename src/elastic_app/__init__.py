@@ -2,6 +2,8 @@ import os
 
 from elasticsearch import Elasticsearch
 
+from flask import Flask, jsonify
+
 
 # ELASTIC_PASSWORD = "pw"
 
@@ -22,3 +24,23 @@ client = Elasticsearch(
 
 # Successful response!
 # print(client.info())
+
+
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "<h1>HELLO WORLD</h1>"
+
+@app.route("/ping", methods=['GET',])
+def ping_pong():
+    return jsonify(
+        {
+            "status": "success",
+            "message": "pong!"
+        }
+    )
+
+def get_index(client):
+    pass
