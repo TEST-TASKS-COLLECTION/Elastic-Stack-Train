@@ -29,7 +29,7 @@ services:
       - '127.0.0.1:9300:9300' 
     environment:
       discovery.type: single-node
-
+      HOST: elasticsearch
       # override default JVM options
       # Set maximum heap size to 512mb
       # initial memory allocation pool xms

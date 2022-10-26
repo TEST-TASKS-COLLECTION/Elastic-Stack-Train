@@ -2,7 +2,6 @@ import os
 
 from elasticsearch import Elasticsearch
 
-import elastic_app
 
 # ELASTIC_PASSWORD = "pw"
 

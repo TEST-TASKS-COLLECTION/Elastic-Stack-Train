@@ -1,7 +1,11 @@
 from datetime import datetime
+from http import client
 from elasticsearch import Elasticsearch
 
 import os
+
+from create_stack import HOST, client
+
 
 
 
@@ -13,7 +17,6 @@ import os
 # )
 
 
-
 doc = {
     'author': 'Mikeyy',
     'text': 'Trying Elasticsearch',
@@ -22,20 +25,20 @@ doc = {
 
 try:
     # providing our id to a index
-    # print(1)
-    # resp = es.index(index="test-index", id=1, document=doc)
-    # print(1.1)
-    # print(resp['result'])
+    print(1)
+    resp = client.index(index="test-index", id=1, document=doc)
+    print(1.1)
+    print(resp['result'])
 
     print(2)
-    resp = es.get(index="test-index", id=1)
+    resp = client.get(index="test-index", id=1)
     print(resp['_source'])
 
     print(3)
-    es.indices.refresh(index="test-index")
+    client.indices.refresh(index="test-index")
 
     print(4)
-    resp = es.search(index="test-index", query={"match_all": {}})
+    resp = client.search(index="test-index", query={"match_all": {}})
     print("3", f"Got {resp['hits']['total']['value']} Hits:")
 
     print(5)
