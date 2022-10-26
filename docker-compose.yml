@@ -2,10 +2,12 @@ version: '3.6'
 services:
   main:
     build: 
-      context: src/
+      context: project/
     container_name: elastic_app
+    ports:
+      - 127.0.0.1:5001:5000
     volumes: 
-      - ./src/:/app/
+      - ./project/:/app/
     depends_on:
       - elasticsearch
     tty: true
@@ -14,6 +16,8 @@ services:
       - elasticnet
     environment:
       - HOST=elasticsearch
+      - FLASK_APP=elastic_app/__init__.py
+      - FLASK_DEBUG=1
 
 
   elasticsearch:
