@@ -83,6 +83,23 @@ def delete_document(client, index, id):
         print(res['result'])
     return res
 
+def check_doc_exists(client, index, id):
+    """
+    Check if a document with the provided id in the index exists
+    Args:
+        client (_type_): client (ElasticSearch object) 
+        index (_type_): index for the document where it shall belong
+        id (_type_): id of the document
+    send_data_as:
+        client.create("test-index-2", id="420", body={
+        "title": "man",
+        "feed": "back lol"
+    # })
+    """
+    print("----------------CHECKING IF DOCUMENT EXISTS--------------------")
+    res = client.exists(index=index, id=id)
+    return res
+
 
 @app.route("/status", methods=["GET"],)
 def api_status():
@@ -100,7 +117,7 @@ def del_doc(id):
         return res, 200
     except Exception as e:
         return {"err": str(e)}, 400
-        
+
 @app.route("/document/create/<string:id>", methods=["POST",])
 def create_doc(id):
     try:
@@ -113,6 +130,18 @@ def create_doc(id):
             return {"err": "Provide a document to insert"}, 400
         res = create_data(client, index=index, id=id, data=data)
         print(res)
+        return jsonify(res), 200
+    except Exception as e:
+        return {"err": str(e)}, 400
+
+@app.route("/document/exists/<string:id>", methods=["GET",])
+def check_if_doc_exists(id):
+    try:
+        req = request.json
+        index= req.get("index")
+        if not index:
+            return {"err": "Provide an index"}, 400
+        res = check_doc_exists(client, index=index, id=id)
         return jsonify(res), 200
     except Exception as e:
         return {"err": str(e)}, 400
