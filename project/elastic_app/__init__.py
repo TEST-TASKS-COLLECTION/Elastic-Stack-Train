@@ -101,6 +101,23 @@ def check_doc_exists(client, index, id):
     return res
 
 
+def get_doc(client, index, id):
+    """
+    Returns a document with the provided id in the index
+    Args:
+        client (_type_): client (ElasticSearch object) 
+        index (_type_): index for the document where it shall belong
+        id (_type_): id of the document
+    send_data_as:
+        client.create("test-index-2", id="420", body={
+        "title": "man",
+        "feed": "back lol"
+    # })
+    """
+    print("----------------GETTING A DOCUMENT--------------------")
+    res = client.get(index=index, id=id)
+    return res
+
 @app.route("/status", methods=["GET"],)
 def api_status():
     client.info()
@@ -130,6 +147,20 @@ def create_doc(id):
             return {"err": "Provide a document to insert"}, 400
         res = create_data(client, index=index, id=id, data=data)
         print(res)
+        return jsonify(res), 200
+    except Exception as e:
+        return {"err": str(e)}, 400
+
+@app.route("/document/get/<string:id>", methods=["GET",])
+def get_document(id):
+    try:
+        req = request.json
+        index= req.get("index")
+        data = req.get("data")
+        if not index:
+            return {"err": "Provide an index"}, 400
+        res = get_doc(client, index=index, id=id)
+        print("res", res)
         return jsonify(res), 200
     except Exception as e:
         return {"err": str(e)}, 400
