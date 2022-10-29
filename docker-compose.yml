@@ -32,15 +32,33 @@ services:
       # communication between nodes in a cluster
       - '127.0.0.1:9300:9300' 
     environment:
-      discovery.type: single-node
-      HOST: elasticsearch
+      - discovery.type= single-node
+      - HOST= elasticsearch
       # override default JVM options
       # Set maximum heap size to 512mb
       # initial memory allocation pool xms
       # maximum memory allocation pool for java virtual machine (xms)
-      ES_JAVA_OPTS: -Xmx512m -Xms512m
-      node.name: es01
-      cluster.name: elasticsearch
+      - ES_JAVA_OPTS= -Xmx512m -Xms512m
+      - node.name= es01
+      - cluster.name= elasticsearch
+
+      # nice-options
+      - cluster.routing.allocation.disk.threshold_enabled= true
+
+      # es will not allocate shards to nodes that are having
+      # more than 65% disk usage 
+      - cluster.routing.allocation.disk.watermark.low= 65%
+
+      # es will attempt to relocate shards aways from nodes whose
+      # disk usage is more than 70%
+      - cluster.routing.allocation.disk.watermark.high= 70%
+
+      # security
+      - xpack.security.enabled= true
+      - xpack.security.audit.enabled= true
+      - ELASTICSEARCH_USERNAME= ${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD= ${ELASTICSEARCH_PASSWORD}
+
     volumes:
       - ./elastic/data:/usr/share/elasticsearch/data
     networks:
@@ -60,6 +78,10 @@ services:
       SERVERNAME: kibana
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       ES_JAVA_OPTS: -Xmx512m -Xms512m
+
+      # security
+      ELASTICSEARCH_USERNAME: ${ELASTICSEARCH_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
     networks:
       - elasticnet
     depends_on:
