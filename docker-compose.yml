@@ -18,10 +18,13 @@ services:
       - HOST=elasticsearch
       - FLASK_APP=elastic_app/__init__.py
       - FLASK_DEBUG=1
+      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+
 
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     container_name: elasticsearch
     hostname: elasticsearch
     #build: .
@@ -55,10 +58,11 @@ services:
       - cluster.routing.allocation.disk.watermark.high=70%
 
       # security
+      # - xpack.monitoring.collection.enabled=true
+      # - xpack.security.audit.enabled=true
+      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - xpack.security.enabled=true
-      - xpack.security.audit.enabled=true
-      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
-      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
 
     volumes:
       - ./elastic/data:/usr/share/elasticsearch/data
@@ -81,8 +85,8 @@ services:
       ES_JAVA_OPTS: -Xmx512m -Xms512m
 
       # security
-      ELASTICSEARCH_USERNAME: ${ELASTICSEARCH_USERNAME}
-      ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD}
+      ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
     networks:
       - elasticnet
     depends_on:

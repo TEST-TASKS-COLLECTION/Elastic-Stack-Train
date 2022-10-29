@@ -16,11 +16,17 @@ from flask import Flask, jsonify, request
 # ES_URL = "elasticsearch://{username}:{password}@{host_ip}:{host_port}"
 
 HOST = os.getenv("HOST", "localhost")
+USER = os.getenv("ELASTIC_USERNAME", "elastic")
+PASSWORD = os.getenv("ELASTIC_PASSWORD", "pass")
 # print("USING HOST: ", HOST)
 
+# client = Elasticsearch(hosts=f"http://{USER}:{PASSWORD}@{HOST}:9200/")
+
 client = Elasticsearch(
-    hosts=[{"host": HOST, "port": 9200, 'scheme': "http"}],
-    # basic_auth=("elastic", ELASTIC_PASSWORD)
+    # hosts=[{"host": HOST, "port": 9200, 'scheme': "http"}],
+    hosts=f"http://{USER}:{PASSWORD}@{HOST}:9200/",
+    # http_auth=(USER, PASSWORD),
+    basic_auth=(USER, PASSWORD)
 )
 
 # Successful response!
@@ -156,9 +162,9 @@ def get_document(id):
     try:
         req = request.json
         index= req.get("index")
-        data = req.get("data")
         if not index:
             return {"err": "Provide an index"}, 400
+        
         res = get_doc(client, index=index, id=id)
         print("res", res)
         return jsonify(res), 200

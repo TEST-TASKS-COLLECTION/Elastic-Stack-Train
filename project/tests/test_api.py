@@ -5,4 +5,4 @@ def test_create():
 
 
 if __name__ == "__main__":
-    test_ping()
+    test_create()
