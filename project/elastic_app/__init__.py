@@ -1,6 +1,5 @@
-from crypt import methods
+import json
 import os
-from urllib import request
 
 from elasticsearch import Elasticsearch
 
@@ -61,7 +60,7 @@ def del_doc(id):
             return {"err": "Provide an index"}, 400
         res = delete_document(client=client, index=index, id=id)
         print("RESPONSE IS: ", res)
-        return res, 200
+        return jsonify(**res), 200
     except Exception as e:
         return {"err": str(e)}, 400
 
@@ -77,7 +76,7 @@ def create_doc(id):
             return {"err": "Provide a document to insert"}, 400
         res = create_data(client, index=index, id=id, data=data)
         print(res)
-        return jsonify(res), 200
+        return jsonify(**res), 200
     except Exception as e:
         return {"err": str(e)}, 400
 
@@ -103,6 +102,9 @@ def check_if_doc_exists(id):
         if not index:
             return {"err": "Provide an index"}, 400
         res = check_doc_exists(client, index=index, id=id)
+        # print(res, type(res))
+        res = {"Doc exists": bool(res)}
+        # print(res)
         return jsonify(res), 200
     except Exception as e:
         return {"err": str(e)}, 400
@@ -131,6 +133,6 @@ def search_doc():
         if not query:
             return {"err": "Provide an query"}, 400
         res = search_query(client, index_name=index, query=query)
-        return jsonify(res), 200
+        return jsonify(**res), 200
     except Exception as e:
         return {"err": str(e)}, 400

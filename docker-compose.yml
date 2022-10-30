@@ -21,13 +21,13 @@ services:
       - ELASTIC_USERNAME=${ELASTIC_USERNAME}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
 
-
-
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    build:
+      context: elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
     container_name: elasticsearch
     hostname: elasticsearch
-    #build: .
     ports:
       # all API calls over HTTP
       - '127.0.0.1:9200:9200'
@@ -42,8 +42,10 @@ services:
       # initial memory allocation pool xms
       # maximum memory allocation pool for java virtual machine (xms)
       - ES_JAVA_OPTS=-Xmx512m -Xms512m
-      - node.name=es01
       - cluster.name=elasticsearch
+      - node.name=es01
+      # declaring our es01 node as master
+      # - cluster.initial_master_nodes= es01
 
       # nice-options
       # this will become true
@@ -57,40 +59,42 @@ services:
       # disk usage is more than 70%
       - cluster.routing.allocation.disk.watermark.high=70%
 
-      # security
-      # - xpack.monitoring.collection.enabled=true
-      # - xpack.security.audit.enabled=true
-      # - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - xpack.security.enabled=true
 
     volumes:
       - ./elastic/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - elasticnet
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
-    container_name: kibana
-    hostname: kibana
-    ports:
-      # kibana backend server port
-      - '127.0.0.1:5601:5601'
+  # kibana:
+  #   build:
+  #     context: kibana/
+  #     args:
+  #       ELASTIC_VERSION: ${ELASTIC_VERSION}
+  #   container_name: kibana
+  #   hostname: kibana
+  #   ports:
+  #     # kibana backend server port
+  #     - '127.0.0.1:5601:5601'
 
-      # logstash will use this port
-      - '127.0.0.1:9600:9600'
-    environment:
-      SERVERNAME: kibana
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-      ES_JAVA_OPTS: -Xmx512m -Xms512m
+  #     # logstash will use this port
+  #     - '127.0.0.1:9600:9600'
+  #   environment:
+  #     # - SERVERNAME=kibana
+  #     # - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #     # - ES_JAVA_OPTS=-Xmx512m -Xms512m
 
-      # security
-      ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
-      ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
-    networks:
-      - elasticnet
-    depends_on:
-      - elasticsearch
+  #     # # security
+  #     # - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
+  #     # - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+  #     - KIBANA_SYSTEM_PASSWORD=${ELASTIC_PASSWORD}
+  #   networks:
+  #     - elasticnet
+  #   volumes:
+  #     - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+  #   depends_on:
+  #     - elasticsearch
 volumes:
   logvolume01: {}
 

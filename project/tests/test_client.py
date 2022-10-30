@@ -25,4 +25,4 @@ def test_client():
 if __name__ == "__main__":
     test_client_object()
     test_client()
-    print(USER, PASSWORD, HOST)
+    # print(USER, PASSWORD, HOST)
