@@ -5,7 +5,9 @@ from elasticsearch import Elasticsearch
 
 from flask import Flask, jsonify, request
 
-from .helpers import get_doc, check_doc_exists, create_data, delete_document, search_query
+from .es_helpers import (
+    get_doc, check_doc_exists,
+    create_data, delete_document, search_query, bulk_create_data)
 
 # ELASTIC_PASSWORD = "pw"
 # username = "username"
@@ -133,5 +135,38 @@ def search_doc():
             return {"err": "Provide an query"}, 400
         res = search_query(client, index_name=index, query=query)
         return jsonify(**res), 200
+    except Exception as e:
+        return {"err": str(e)}, 400
+
+
+
+@app.route("/document/bulk_create/", methods=["POST",])
+def bulk_create_doc():
+    try:
+        req = request.json
+        index= req.get("index")
+        data = req.get("source")
+        if not index:
+            return {"err": "Provide an index"}, 400
+        if not data:
+            return {"err": "Provide a document to insert"}, 400
+        res = bulk_create_data(client, index=index, data=data, file_path=None)
+        print("response is", res)
+        return jsonify(res), 200
+    except Exception as e:
+        return {"err": str(e)}, 400
+
+
+@app.route("/document/bulk_create/status", methods=["GET",])
+def bulk_create_doc_status():
+    try:
+        req = request.json
+        index= req.get("index")
+        if not index:
+            return {"err": "Provide an index"}, 400
+
+        res = client.count(index=index)
+        print(res)
+        return jsonify(res.body['count']), 200
     except Exception as e:
         return {"err": str(e)}, 400

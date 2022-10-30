@@ -1,3 +1,9 @@
+from distutils import extension
+import json
+import csv
+
+from elasticsearch import helpers
+
 INDEX_SETTING = {
     "settings": {
         "index": {
@@ -122,3 +128,83 @@ def search_query(client, index_name, query):
         index = index_name
     )
     return res
+
+def read_csv(file_path, index_name):
+    with open(file_path, "r") as f:
+        reader = csv.DictReader(f, delimiter=",")
+        
+        for row in reader:
+            doc = {
+                "_index": index_name,
+                "_id": row["id"],
+                "_source": {
+                    "id": row["id"],
+                    "name": row['name'],
+                    "price": float(row['price']),
+                    "brand": row['brand'],
+                    "attributes": [
+                        {
+                            "attributes_name": "cpu",
+                            "attributes_value": row['cpu']
+                        },
+                        {
+                            "attributes_name": "memory",
+                            "attributes_value": row['memory']
+                        },
+                        {
+                            "attributes_name": "storage",
+                            "attributes_value": row['storage']
+                        }
+                    ]
+                    
+                }
+            }
+            yield doc
+
+
+def read_json(file_path, index_name):
+    with open(file_path, "r") as f:
+        data = json.loads(f.read())
+        
+        for i in data:
+            yield i
+
+def read_data(data, index_name):
+    for d in data:
+        doc = {
+            "_index": index_name,
+            "_id": d.get("id"),
+            "_source": {
+                **d['data']
+            }  
+        }
+        yield doc
+
+def bulk_create_data(client, index, data=None, file_path=None):
+    if file_path:
+        file_extension = file_path.split(".")[-1]
+        if  file_extension == "csv":
+            res = helpers.bulk(client,
+                               read_csv(file_path,
+                                        index_name=index))
+            return res
+        elif file_extension == "json":
+            res = helpers.bulk(client, 
+                               read_json(
+                                   file_path,
+                                   index_name=index
+                               ))
+            return res
+        else:
+            print("Provide a proper file extension")
+            return None
+    elif data:
+        print("GETTING DATA")
+        res = helpers.bulk(client, 
+                               read_data(
+                                   data,
+                                   index_name=index
+                               ))
+        print(res)
+        return res
+    return None
