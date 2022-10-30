@@ -167,6 +167,6 @@ def bulk_create_doc_status():
 
         res = client.count(index=index)
         print(res)
-        return jsonify(res.body['count']), 200
+        return jsonify(**res), 200
     except Exception as e:
         return {"err": str(e)}, 400
