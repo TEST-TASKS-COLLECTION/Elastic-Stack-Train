@@ -50,7 +50,7 @@ def ping_pong():
 
 @app.route("/status", methods=["GET"],)
 def api_status():
-    client.info()
+    return jsonify(**client.info())
 
 @app.route("/document/delete/<string:id>", methods=["DELETE"],)
 def del_doc(id):
