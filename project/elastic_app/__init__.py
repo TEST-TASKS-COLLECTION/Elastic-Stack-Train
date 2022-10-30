@@ -13,7 +13,6 @@ from .helpers import get_doc, check_doc_exists, create_data, delete_document, se
 # host_ip = "host_ip"
 # host_port = "host_port"
 
-# ES_URL = "elasticsearch://{username}:{password}@{host_ip}:{host_port}"
 
 HOST = os.getenv("HOST", "localhost")
 USER = os.getenv("ELASTIC_USERNAME", "elastic")
