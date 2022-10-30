@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 from urllib import request
 
@@ -5,7 +6,7 @@ from elasticsearch import Elasticsearch
 
 from flask import Flask, jsonify, request
 
-from .helpers import get_doc, check_doc_exists, create_data, delete_document
+from .helpers import get_doc, check_doc_exists, create_data, delete_document, search_query
 
 # ELASTIC_PASSWORD = "pw"
 # username = "username"
@@ -102,6 +103,34 @@ def check_if_doc_exists(id):
         if not index:
             return {"err": "Provide an index"}, 400
         res = check_doc_exists(client, index=index, id=id)
+        return jsonify(res), 200
+    except Exception as e:
+        return {"err": str(e)}, 400
+
+@app.route("/index/create", methods=["POST"])
+def create_index():
+    try:
+        req = request.json
+        index= req.get("index_name")
+        index_setting = req.get("index_setting")
+        if not index:
+            return {"err": "Provide an index"}, 400
+        res = create_index(client, index_name=index, index_setting=index_setting)
+        return jsonify(res), 200
+    except Exception as e:
+        return {"err": str(e)}, 400
+
+@app.route("/document/search", methods=["GET"])
+def search_doc():
+    try:
+        req = request.json
+        index= req.get("index")
+        query = req.get("query")
+        if not index:
+            return {"err": "Provide an index"}, 400
+        if not query:
+            return {"err": "Provide an query"}, 400
+        res = search_query(client, index_name=index, query=query)
         return jsonify(res), 200
     except Exception as e:
         return {"err": str(e)}, 400
